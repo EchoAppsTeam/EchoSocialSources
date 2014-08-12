@@ -1,0 +1,18 @@
+{
+	"version": 1,
+	"manifest": {
+		"id": "echo-social-sources",
+		"name": "Social Sources"
+	},
+	"appBaseURLs": {
+		"dev": "//cdn.echoenabled.com/apps/echo/social-sources/v{%=packageVersions.stable%}/dev",
+		"prod": "//cdn.echoenabled.com/apps/echo/social-sources/v{%=packageVersions.stable%}"
+	},
+	"apiBaseURLs": {
+		"StreamServer": {
+			"basic": "//api.echoenabled.com/v1/",
+			"ws": "//live.echoenabled.com/v1/"
+		},
+		"DataServer": "https://api.dataserver.echoenabled.com/v1/"
+	}
+}

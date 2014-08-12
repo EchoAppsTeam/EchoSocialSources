@@ -1,0 +1,41 @@
+{
+	"id": "{%=manifest.id%}",
+	"name": "{%=manifest.name%}",
+	"description": "Visualize the distribution of content sources on a pie or donut chart",
+	"app_version": "{%=packageVersions.stable%}",
+	"icon": "{%=appBaseURLs.prod%}/images/icon.png",
+	"developer": {
+		"id": "echo",
+		"name": "Echo",
+		"url": "http://www.aboutecho.com",
+		"email": "solutions@aboutecho.com",
+		"icon": "http://cdn.echoenabled.com/images/echo.png"
+	},
+	"dashboards": [{
+		"id": "instances",
+		"type": "instances",
+		"title": "Instances",
+		"script": "{%=appBaseURLs.prod%}/dashboard.js",
+		"component": "Echo.Apps.SocialSources.Dashboard",
+		"config": {
+			"instanceManager": {
+				"instance": {"useLoadingIcon": true}
+			}
+		}
+	}, {
+		"id": "docs",
+		"type": "external",
+		"title": "Documentation",
+		"config": {
+			"src": "http://emb.echoplatform.com/echo-social-sources/docs/overview/"
+		}
+	}],
+	"client_widget": {
+		"component": "Echo.Apps.SocialSources",
+		"scripts": {
+			"dev": "{%=appBaseURLs.dev%}/app.js",
+			"prod": "{%=appBaseURLs.prod%}/app.js"
+		}
+	},
+	"cloudapp_protocol_version": "1.0.0"
+}

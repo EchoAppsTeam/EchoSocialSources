@@ -1,0 +1,30 @@
+{
+  "name": "echo-social-sources",
+  "description": "Echo Social Sources app",
+  "version": "1.0.0",
+  "author": {
+    "name": "Echo",
+    "url": "http://aboutecho.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/EchoAppsTeam/EchoSocialSources.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EchoAppsTeam/EchoSocialSources/issues"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "engines": {
+    "node": ">=0.10"
+  },
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "cloudapp-boilerplate": "^0.1.0"
+  },
+  "private": true
+}
