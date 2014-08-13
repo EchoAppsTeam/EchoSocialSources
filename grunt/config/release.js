@@ -1,5 +1,5 @@
 module.exports = {
 	options: {
-		path: '/apps/echo/volume-over-time'
+		path: '/apps/echo/social-sources'
 	}
 };
