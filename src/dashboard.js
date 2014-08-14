@@ -14,6 +14,16 @@ dashboard.labels = {
 dashboard.mappings = {
 	"dependencies.appkey": {
 		"key": "dependencies.StreamServer.appkey"
+	},
+	"presentation.nativeSegmentLabel": {
+		"key": "sources.native.label"
+	},
+
+	"presentation.nativeSegmentColor": {
+		"key": "sources.native.color"
+	},
+	"presentation.nativeSegmentHighlight": {
+		"key": "sources.native.highlight"
 	}
 };
 

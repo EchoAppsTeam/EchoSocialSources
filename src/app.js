@@ -42,9 +42,9 @@ sources.config = {
 		},
 		"native": {
 			"id": "native",
-			"color": "",
-			"highlight": "",
-			"label": ""
+			"color": "#D8D8D8",
+			"highlight": "#E4E4E4",
+			"label": "Website"
 		},
 		"other": {
 			"id": "other",
@@ -55,10 +55,7 @@ sources.config = {
 	},
 	"presentation": {
 		"visualization": "doughnut", // or "pie"
-		"maxWidth": 500, // in px
-		"nativeSegmentColor": "#D8D8D8",
-		"nativeSegmentHighlight": "#E4E4E4",
-		"nativeSegmentLabel": "Native"
+		"maxWidth": 500 // in px
 	},
 	"chart": {
 		"tooltipTemplate": "<%=label%>",
@@ -76,18 +73,6 @@ sources.config = {
 				}
 			}
 		}
-	}
-};
-
-sources.config.normalizer = {
-	"presentation": function(value) {
-		this.set("sources.native", {
-			"id": "native",
-			"color": value.nativeSegmentColor,
-			"highlight": value.nativeSegmentHighlight,
-			"label": value.nativeSegmentLabel
-		});
-		return value;
 	}
 };
 
@@ -199,6 +184,7 @@ sources.methods._associateWithSources = function(entries, updateChart) {
 					chart.update();
 				}
 				placed = true;
+				return false; // break
 			}
 		});
 		if (!placed) {

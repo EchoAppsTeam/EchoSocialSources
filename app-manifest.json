@@ -27,7 +27,7 @@
 		"type": "external",
 		"title": "Documentation",
 		"config": {
-			"src": "http://emb.echoplatform.com/echo-social-sources/docs/overview/"
+			"src": "http://emb.echoplatform.com/social-sources/docs/overview/"
 		}
 	}],
 	"client_widget": {
