@@ -77,7 +77,7 @@ sources.config = {
 };
 
 sources.labels = {
-        "noSources": "There are no items yet.<br>Stay tuned!"
+	"noSources": "There are no items yet.<br>Stay tuned!"
 };
 
 sources.dependencies = [{
@@ -236,8 +236,8 @@ sources.methods._requestData = function(handlers) {
 };
 
 sources.css =
-        '.{class:empty} { border: 1px solid #d2d2d2; margin: 0 5px 10px 5px; padding: 30px 0; text-align: left; }' +
-        '.{class:empty} .{class:message} { background: url("//cdn.echoenabled.com/apps/echo/conversations/v2/sdk-derived/images/info.png") no-repeat; margin: 0 auto; font-size: 14px; font-family: "Helvetica Neue", Helvetica, "Open Sans", sans-serif; padding-left: 40px; display: block; width: 180px; line-height: 16px; color: #7f7f7f; }' +
+	'.{class:empty} { border: 1px solid #d2d2d2; margin: 0 5px 10px 5px; padding: 30px 0; text-align: left; }' +
+	'.{class:empty} .{class:message} { background: url("//cdn.echoenabled.com/apps/echo/conversations/v2/sdk-derived/images/info.png") no-repeat; margin: 0 auto; font-size: 14px; font-family: "Helvetica Neue", Helvetica, "Open Sans", sans-serif; padding-left: 40px; display: block; width: 180px; line-height: 16px; color: #7f7f7f; }' +
 	'.{class:container} { margin: 0px auto; }' +
 	'.{class:graph} { width: 100%; }';
 
