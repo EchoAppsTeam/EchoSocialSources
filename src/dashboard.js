@@ -33,6 +33,8 @@ dashboard.dependencies = [{
 }, {
 	"url": "{config:cdnBaseURL.apps.dataserver}/full.pack.js",
 	"control": "Echo.DataServer.Controls.Pack"
+}, {
+	"url": "//cdn.echoenabled.com/apps/echo/social-map/v1/colorpicker.js"
 }];
 
 dashboard.config = {
@@ -78,16 +80,6 @@ dashboard.config.ecl = [{
 		}
 	}, {
 		"component": "Input",
-		"name": "maxWidth",
-		"type": "number",
-		"default": 500,
-		"config": {
-			"title": "Maximum width",
-			"desc": "Specifies a maximum width (in pixels) of an App container",
-			"data": {"sample": 500}
-		}
-	}, {
-		"component": "Input",
 		"name": "nativeSegmentLabel",
 		"type": "string",
 		"default": "Website",
@@ -97,7 +89,7 @@ dashboard.config.ecl = [{
 			"data": {"sample": "Comments"}
 		}
 	}, {
-		"component": "Input",
+		"component": "Colorpicker",
 		"name": "nativeSegmentColor",
 		"type": "string",
 		"default": "#D8D8D8",
@@ -107,7 +99,7 @@ dashboard.config.ecl = [{
 			"data": {"sample": "#D8D8D8"}
 		}
 	}, {
-		"component": "Input",
+		"component": "Colorpicker",
 		"name": "nativeSegmentHighlight",
 		"type": "string",
 		"default": "#E4E4E4",
@@ -116,13 +108,24 @@ dashboard.config.ecl = [{
 			"desc": "Specifies hover color for the native content segment",
 			"data": {"sample": "#E4E4E4"}
 		}
+	}, {
+		"component": "Input",
+		"name": "maxWidth",
+		"type": "number",
+		"default": 500,
+		"config": {
+			"title": "Maximum width",
+			"desc": "Specifies a maximum width (in pixels) of an App container",
+			"data": {"sample": 500}
+		}
 	}]
 }, {
 	"component": "Group",
 	"name": "dependencies",
 	"type": "object",
 	"config": {
-		"title": "Dependencies"
+		"title": "Dependencies",
+		"expanded": false
 	},
 	"items": [{
 		"component": "Select",
