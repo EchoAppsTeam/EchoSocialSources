@@ -7,7 +7,9 @@ if (Echo.App.isDefined(sources)) return;
 
 sources.vars = {
 	"chart": undefined,
-	"sources": []
+	"sources": [],
+	"visible": true,
+	"watchers": {}
 };
 
 sources.config = {
@@ -15,6 +17,7 @@ sources.config = {
 	// amount of items to retrieve from StreamServer
 	// 100 is the limitation on the amount of root items
 	"maxItemsToRetrieve": 100,
+	"chartUpdateDelay": 10000, // in ms
 	"sources": {
 		"twitter": {
 			"id": "twitter",
@@ -101,40 +104,44 @@ sources.init = function() {
 		return;
 	}
 
-	app._requestData({
-		"onData": function(data) {
-			app._associateWithSources(data.entries);
-			app.render();
+	// spin up document visibility watcher to stop
+	// gauge rendering in case a page is not active
+	var watcher = app._createDocumentVisibilityWatcher();
+	if (watcher) {
+		watcher.start(function() {
+			app.set("visible", true);
+			app.refresh();
+		}, function() {
+			app.set("visible", false);
+		});
+		app.set("watchers.visibility", watcher);
+	}
 
-			// we init graph *only* after a target is placed into DOM,
-			// Chart.js doesn't like elements detached from DOM structure...
-			if (app.get("sources").length) {
-				app.set("chart", app._initChart(app.view.get("graph")));
-			}
+	// create chart update watcher to prevent
+	// massive amount of chart update calls
+	app.set("watchers.update", app._createUpdateWatcher());
 
-			app.ready();
-		},
-		"onUpdate": function(data) {
-			var chartInitialized = !!app.get("chart");
-			app._associateWithSources(data.entries, chartInitialized);
-			if (app.get("sources").length && !chartInitialized) {
-				// rerender the whole app
-				// to switch templates and init chart
-				app.render();
-				app.set("chart", app._initChart(app.view.get("graph")));
-			}
-		},
-		"onError": function(data, options) {
-			var isCriticalError =
-				typeof options.critical === "undefined" ||
-				options.critical && options.requestType === "initial";
+	app.request = app._getRequestObject();
 
-			if (isCriticalError) {
-				app.showError(data, $.extend(options, {
-					"request": app.request
-				}));
+	var data = app.get("data");
+	if ($.isEmptyObject(data)) {
+		app.request.send();
+	} else {
+		app._getHandlerFor("onData")(data);
+		app.request.send({
+			"skipInitialRequest": true,
+			"data": {
+				"q": app._assembleQuery(),
+				"appkey": app.config.get("dependencies.StreamServer.appkey"),
+				"since": data.nextSince
 			}
-		}
+		});
+	}
+};
+
+sources.destroy = function() {
+	$.each(this.get("watchers"), function(_, watcher) {
+		watcher.stop();
 	});
 };
 
@@ -181,7 +188,7 @@ sources.methods._associateWithSources = function(entries, updateChart) {
 				source.value++;
 				if (updateChart && chart.segments[id]) {
 					chart.segments[id].value = source.value;
-					chart.update();
+					app.get("watchers.update").start();
 				}
 				placed = true;
 				return false; // break
@@ -215,11 +222,9 @@ sources.methods._assembleQuery = function() {
 	return this.substitute({"template": query});
 };
 
-sources.methods._requestData = function(handlers) {
+sources.methods._getRequestObject = function() {
 	var ssConfig = this.config.get("dependencies.StreamServer");
-	// keep a reference to a request object in "this" to trigger its
-	// automatic sweeping out on Echo.Control level at app destory time
-	this.request = Echo.StreamServer.API.request({
+	return Echo.StreamServer.API.request({
 		"endpoint": "search",
 		"apiBaseURL": ssConfig.apiBaseURL,
 		"data": {
@@ -227,12 +232,131 @@ sources.methods._requestData = function(handlers) {
 			"appkey": ssConfig.appkey
 		},
 		"liveUpdates": $.extend(ssConfig.liveUpdates, {
-			"onData": handlers.onUpdate
+			"onData": this._getHandlerFor("onUpdate")
 		}),
-		"onError": handlers.onError,
-		"onData": handlers.onData
+		"onError": this._getHandlerFor("onError"),
+		"onData": this._getHandlerFor("onData")
 	});
-	this.request.send();
+};
+
+// we prevent chart updates from super-fast calls in case of a huge
+// new items flow, since chart update is quite CPU-intensive operation.
+sources.methods._createUpdateWatcher = function() {
+	var app = this, timeout;
+	var stop = function() {
+		clearTimeout(timeout);
+		timeout = undefined;
+	};
+	var start = function() {
+		if (timeout || !app.get("chart")) return;
+		timeout = setTimeout(function() {
+			if (app.get("visible")) {
+				app.get("chart").update();
+			}
+			stop();
+		}, app.config.get("chartUpdateDelay"));
+	};
+	return {"start": start, "stop": stop};
+};
+
+// maybe move to Echo.Utils later...
+// note: the same function is located within Echo Historical Volume app!
+// inspired by http://www.html5rocks.com/en/tutorials/pagevisibility/intro/
+sources.methods._createDocumentVisibilityWatcher = function() {
+	var prefix, handler;
+
+	// if "hidden" is natively supported just return it
+	if ("hidden" in document) {
+		prefix = ""; // non-prefixed, i.e. natively supported
+	} else {
+		var prefixes = ["webkit", "moz", "ms", "o"];
+		for (var i = 0; i < prefixes.length; i++) {
+			if ((prefixes[i] + "Hidden") in document) {
+				prefix = prefixes[i] + "Hidden";
+				break;
+			}
+		}
+	}
+
+	// we were unable to locate "hidden" property,
+	// which means this functionality is not supported
+	if (prefix === undefined) return;
+
+	var eventName = prefix + "visibilitychange";
+	return {
+		"start": function(onShow, onHide) {
+			handler = function() {
+				document[prefix ? prefix + "Hidden" : "hidden"]
+					? onHide()
+					: onShow();
+			};
+			$(document).on(eventName, handler);
+		},
+		"stop": function() {
+			$(document).off(eventName, handler);
+		}
+	};
+};
+
+sources.methods._getHandlerFor = function(name) {
+	return $.proxy(this.handlers[name], this);
+};
+
+sources.methods.handlers = {};
+
+sources.methods.handlers.onData = function(data) {
+	var app = this;
+
+	// store initial data in the config as well,
+	// so that we can access it later to refresh the gauge
+	if ($.isEmptyObject(app.config.get("data"))) {
+		app.config.set("data", data);
+	}
+
+	app._associateWithSources(data.entries);
+	app.render();
+
+	// we init graph *only* after a target is placed into DOM,
+	// Chart.js doesn't like elements detached from DOM structure...
+	if (app.get("sources").length) {
+		app.set("chart", app._initChart(app.view.get("graph")));
+	}
+
+	app.ready();
+};
+
+sources.methods.handlers.onUpdate = function(data) {
+	if (!data || !data.entries) return;
+
+	if (this.get("visible")) {
+		var chartInitialized = !!this.get("chart");
+		this._associateWithSources(data.entries, chartInitialized);
+		if (this.get("sources").length && !chartInitialized) {
+			// rerender the whole app
+			// to switch templates and init chart
+			this.render();
+			this.set("chart", this._initChart(this.view.get("graph")));
+		}
+	}
+
+	if (data && data.entries) {
+		var max = this.config.get("maxItemsToRetrieve");
+		var entries = this.config.get("data.entries", []);
+		data.entries = data.entries.concat(entries).slice(0, max);
+		this.config.set("data", data);
+	}
+};
+
+sources.methods.handlers.onError = function(data, options) {
+	var isCriticalError =
+		typeof options.critical === "undefined" ||
+		options.critical && options.requestType === "initial";
+
+	if (isCriticalError) {
+		this.showError(data, $.extend(options, {
+			"request": this.request
+		}));
+	}
 };
 
 sources.css =
