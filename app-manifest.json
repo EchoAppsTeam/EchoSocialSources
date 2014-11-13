@@ -33,5 +33,5 @@
 		}
 	},
 	"cloudapp_protocol_version": "1.0.0",
-	"endpoints": ["StreamServer", "DataServer"]
+	"dependencies": ["StreamServer", "DataServer"]
 }
