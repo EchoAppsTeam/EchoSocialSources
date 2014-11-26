@@ -90,11 +90,11 @@ dashboard.config.ecl = [{
 		"component": "Input",
 		"name": "maxWidth",
 		"type": "number",
-		"default": 500,
+		"default": 220,
 		"config": {
 			"title": "Maximum width",
 			"desc": "Specifies a maximum width (in pixels) of an App container",
-			"data": {"sample": 500}
+			"data": {"sample": 220}
 		}
 	}]
 }, {

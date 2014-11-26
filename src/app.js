@@ -58,7 +58,7 @@ sources.config = {
 	},
 	"presentation": {
 		"visualization": "doughnut", // or "pie"
-		"maxWidth": 500 // in px
+		"maxWidth": 220 // in px
 	},
 	"chart": {
 		"tooltipTemplate": "<%=label%>",
