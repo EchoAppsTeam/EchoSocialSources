@@ -162,6 +162,12 @@ sources.templates.empty =
 		'<span class="{class:message}">{label:noSources}</span>' +
 	'</div>';
 
+sources.renderers.container = function(element) {
+	return element.css({
+		"max-width": parseInt(this.config.get("presentation.maxWidth") + "px")
+	});
+};
+
 sources.methods._initChart = function(target) {
 	var ctx = target.get(0).getContext("2d");
 	var width = Math.min(
