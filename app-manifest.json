@@ -1,6 +1,6 @@
 {
 	"id": "echo-social-sources",
-	"name": "Social Sources",
+	"name": "Sources",
 	"description": "Visualize the distribution of content sources on a pie or donut chart",
 	"app_version": "{%=packageVersions.stable%}",
 	"icon": "{%=appBaseURLs.prod%}/images/icon.png",
